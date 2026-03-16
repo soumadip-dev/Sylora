@@ -156,6 +156,50 @@ app.post('/auth/token', (req, res) => {
   }
 });
 
+// REFRESH TOKEN
+app.post('/auth/refresh', (req, res) => {
+  try {
+    const token = req.cookies.session_token;
+
+    if (!token) {
+      return res.status(401).json({
+        error: 'No session found',
+      });
+    }
+
+    const session = loginSessions[token];
+
+    if (!session) {
+      return res.status(401).json({
+        error: 'Invalid session',
+      });
+    }
+
+    const secret = process.env.JWT_SECRET || 'default-secret-key';
+
+    const newAccessToken = jwt.sign(
+      {
+        email: session.email,
+        sessionId: token,
+      },
+      secret,
+      {
+        expiresIn: '15m',
+      }
+    );
+
+    return res.json({
+      access_token: newAccessToken,
+      expires_in: 900,
+      message: 'Token refreshed successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: 'Refresh failed',
+    });
+  }
+});
+
 // PROTECTED ROUTE
 app.get('/protected', authMiddleware, (req, res) => {
   return res.json({
