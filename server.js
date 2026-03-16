@@ -53,10 +53,46 @@ app.post('/auth/login', (req, res) => {
       message: 'OTP sent',
       loginSessionId,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
-      status: 'error',
       message: 'Login failed',
+    });
+  }
+});
+
+// RESEND OTP (ADDED)
+app.post('/auth/resend-otp', (req, res) => {
+  try {
+    const { loginSessionId } = req.body;
+
+    if (!loginSessionId) {
+      return res.status(400).json({
+        error: 'loginSessionId required',
+      });
+    }
+
+    const session = loginSessions[loginSessionId];
+
+    if (!session) {
+      return res.status(401).json({
+        error: 'Invalid session',
+      });
+    }
+
+    const newOtp = Math.floor(100000 + Math.random() * 900000);
+
+    otpStore[loginSessionId] = newOtp;
+
+    session.expiresAt = Date.now() + 2 * 60 * 1000;
+
+    console.log(`New OTP ${newOtp} for session ${loginSessionId}`);
+
+    return res.json({
+      message: 'OTP resent',
+    });
+  } catch {
+    return res.status(500).json({
+      error: 'Resend failed',
     });
   }
 });
@@ -100,13 +136,12 @@ app.post('/auth/verify-otp', (req, res) => {
 
     delete otpStore[loginSessionId];
 
-    return res.status(200).json({
+    return res.json({
       message: 'OTP verified',
       sessionId: loginSessionId,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
-      status: 'error',
       message: 'OTP verification failed',
     });
   }
@@ -119,7 +154,7 @@ app.post('/auth/token', (req, res) => {
 
     if (!token) {
       return res.status(401).json({
-        error: 'Unauthorized - valid session required',
+        error: 'Unauthorized',
       });
     }
 
@@ -144,13 +179,12 @@ app.post('/auth/token', (req, res) => {
       }
     );
 
-    return res.status(200).json({
+    return res.json({
       access_token: accessToken,
       expires_in: 900,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
-      status: 'error',
       message: 'Token generation failed',
     });
   }
@@ -161,15 +195,7 @@ app.post('/auth/refresh', (req, res) => {
   try {
     const token = req.cookies.session_token;
 
-    if (!token) {
-      return res.status(401).json({
-        error: 'No session found',
-      });
-    }
-
-    const session = loginSessions[token];
-
-    if (!session) {
+    if (!token || !loginSessions[token]) {
       return res.status(401).json({
         error: 'Invalid session',
       });
@@ -177,9 +203,9 @@ app.post('/auth/refresh', (req, res) => {
 
     const secret = process.env.JWT_SECRET || 'default-secret-key';
 
-    const newAccessToken = jwt.sign(
+    const newToken = jwt.sign(
       {
-        email: session.email,
+        email: loginSessions[token].email,
         sessionId: token,
       },
       secret,
@@ -189,11 +215,10 @@ app.post('/auth/refresh', (req, res) => {
     );
 
     return res.json({
-      access_token: newAccessToken,
+      access_token: newToken,
       expires_in: 900,
-      message: 'Token refreshed successfully',
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       error: 'Refresh failed',
     });
@@ -205,9 +230,7 @@ app.get('/protected', authMiddleware, (req, res) => {
   return res.json({
     message: 'Access granted',
     user: req.user,
-    success_flag: `FLAG-${Buffer.from(req.user.email + '_COMPLETED_ASSIGNMENT').toString(
-      'base64'
-    )}`,
+    success_flag: `FLAG-${Buffer.from(req.user.email + '_COMPLETED_ASSIGNMENT').toString('base64')}`,
   });
 });
 
@@ -222,16 +245,14 @@ app.post('/auth/logout', (req, res) => {
       });
     }
 
-    if (loginSessions[token]) {
-      delete loginSessions[token];
-    }
+    delete loginSessions[token];
 
     res.clearCookie('session_token');
 
     return res.json({
       message: 'Logged out successfully',
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       error: 'Logout failed',
     });
@@ -242,10 +263,10 @@ app.post('/auth/logout', (req, res) => {
 setInterval(() => {
   const now = Date.now();
 
-  Object.keys(loginSessions).forEach(sessionId => {
-    if (loginSessions[sessionId].expiresAt < now) {
-      delete loginSessions[sessionId];
-      delete otpStore[sessionId];
+  Object.keys(loginSessions).forEach(id => {
+    if (loginSessions[id].expiresAt < now) {
+      delete loginSessions[id];
+      delete otpStore[id];
     }
   });
 }, 60000);
