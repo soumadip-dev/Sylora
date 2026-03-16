@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Authentication</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-wrapper">
+        <!-- Login Form -->
+        <div class="form-container sign-in" id="sign-in-form">
+          <form action="#" id="loginForm">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Enter your details to proceed further</p>
+            <div class="input-group">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="loginEmail" placeholder="Email Address" required />
+            </div>
+            <div class="input-group">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="loginPassword" placeholder="Password" required />
+            </div>
+            <div class="options">
+              <label><input type="checkbox" /> Remember me</label>
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <p class="switch-text">
+              Don't have an account? <span class="switch-btn" id="switchToSignUp">Sign Up</span>
+            </p>
+          </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="form-container sign-up hidden" id="sign-up-form">
+          <form action="#" id="signupForm">
+            <h2>Create Account</h2>
+            <p class="subtitle">Join us to explore the features</p>
+            <div class="input-group">
+              <i class="fas fa-user"></i>
+              <input type="text" id="signupName" placeholder="Full Name" required />
+            </div>
+            <div class="input-group">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="signupEmail" placeholder="Email Address" required />
+            </div>
+            <div class="input-group">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="signupPassword" placeholder="Password" required />
+            </div>
+            <button type="submit" class="btn">Sign Up</button>
+            <p class="switch-text">
+              Already have an account? <span class="switch-btn" id="switchToLogin">Login</span>
+            </p>
+          </form>
+        </div>
+
+        <div class="message-container hidden" id="message-container">
+          <p id="message-text"></p>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
