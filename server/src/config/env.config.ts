@@ -1,23 +1,27 @@
 import dotenv from 'dotenv';
+import { z } from 'zod';
 
 dotenv.config();
 
-interface EnvConfig {
-  PORT: number;
-  MONGO_URI: string;
-  CORS_ORIGINS: string[];
-  NODE_ENV: string;
-  ADMIN_EMAILS: string;
-}
+const EnvSchema = z.object({
+  PORT: z.coerce.number().default(8080),
+  MONGO_URI: z.string().default(''),
 
-const port = Number(process.env.PORT);
+  CORS_ORIGINS: z
+    .string()
+    .default('')
+    .transform(value =>
+      value
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean)
+    ),
+  NODE_ENV: z.string().default('development'),
+  ADMIN_EMAILS: z.string().default('soumadipmajila@gmail.com'),
 
-export const env: EnvConfig = {
-  PORT: Number.isNaN(port) ? 8080 : port,
-  MONGO_URI: process.env.MONGODB_URI || '',
-  CORS_ORIGINS: process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
-    : [],
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  ADMIN_EMAILS: process.env.ADMIN_EMAILS || 'soumadipmajila@gmail.com',
-};
+  CLOUDINARY_CLOUD_NAME: z.string().default(''),
+  CLOUDINARY_API_KEY: z.string().default(''),
+  CLOUDINARY_API_SECRET: z.string().default(''),
+});
+
+export const env = EnvSchema.parse(process.env);
