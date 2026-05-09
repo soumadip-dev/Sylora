@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig } from 'axios';
+import axios, { AxiosHeaders, type AxiosRequestConfig } from 'axios';
 import { env } from './env';
 import type { ApiEnvelope } from './types';
 
@@ -25,8 +25,8 @@ api.interceptors.request.use(async config => {
   const token = await tokenGetter();
 
   if (token) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers = config.headers ?? new AxiosHeaders();
+    config.headers.set('Authorization', `Bearer ${token}`);
   }
 
   return config;
