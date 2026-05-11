@@ -1,11 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable, Alert, useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  Alert,
+  useColorScheme,
+  ActivityIndicator,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { useAppStore } from '../../store/useAppStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SignInScreen from '@/src/components/sign-in';
+import { useAuth } from '@clerk/expo';
+import { useAuthStore } from '@/src/features/auth/store';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
@@ -13,49 +24,20 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user } = useAppStore();
   const insets = useSafeAreaInsets();
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
-  const handleLogin = () => {
-    Alert.alert(
-      'Login',
-      'Trying to login...',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Login',
-          onPress: () => {
-            setIsLoggedIn(true);
-            Alert.alert('Success', 'Logged in successfully!');
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
+  const { isLoaded, isSignedIn } = useAuth();
+  const { isBootstrapped, status } = useAuthStore();
 
+  useEffect(() => {
+    console.log('isLoaded', isLoaded);
+    console.log('isSignedIn', isSignedIn);
+    console.log('isBootstrapped', isBootstrapped);
+    console.log('status', status);
+  }, [isLoaded, isSignedIn, isBootstrapped, status]);
+
+  //TODO: IT IS DEMO FOR NOW
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Logout',
-          onPress: () => {
-            setIsLoggedIn(false);
-            Alert.alert('Logged Out', 'You have been logged out successfully.');
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: false }
-    );
+    Alert.alert('Logout', 'Are you sure you want to logout?');
   };
 
   const menuItems = [
@@ -90,32 +72,13 @@ export default function ProfileScreen() {
     },
   ];
 
-  if (!isLoggedIn) {
+  if (!isLoaded || (isSignedIn && (!isBootstrapped || status === 'loading'))) {
+    return <ActivityIndicator size="large" color={colors.accent} />;
+  }
+
+  if (!isSignedIn) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* <View style={[styles.loginContainer, { paddingTop: insets.top }]}>
-          <View style={[styles.loginIconContainer, { backgroundColor: colors.surface }]}>
-            <Feather name="user" size={60} color={colors.accent} />
-          </View>
-          <Text style={[styles.loginTitle, { color: colors.primary }]}>Welcome Back</Text>
-          <Text style={[styles.loginSubtitle, { color: colors.textMuted }]}>
-            Login to access your luxury portfolio{'\n'}
-            and explore exclusive offers
-          </Text>
-          <Pressable
-            style={[styles.loginButton, { backgroundColor: colors.surface }]}
-            onPress={handleLogin}
-          >
-            <Text style={[styles.loginButtonText, { color: colors.primary }]}>
-              LOGIN TO YOUR ACCOUNT
-            </Text>
-            <Feather name="arrow-right" size={18} color={colors.accent} />
-          </Pressable>
-          <Text style={[styles.loginFooter, { color: colors.textMuted }]}>
-            New to our luxury collection?{' '}
-            <Text style={[styles.loginFooterLink, { color: colors.accent }]}>Create Account</Text>
-          </Text>
-        </View> */}
         <SignInScreen />
       </View>
     );

@@ -16,7 +16,7 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// Attach the authentication token to every outgoing request.
+//* Attach the authentication token to every outgoing request.
 api.interceptors.request.use(async config => {
   if (!tokenGetter) {
     return config;
@@ -32,22 +32,8 @@ api.interceptors.request.use(async config => {
   return config;
 });
 
+//* Handle the error response from the API.
 function getErrorMsg(error: unknown): string {
-  /*
-  Handle errors thrown by Axios.
-  
-  Typical Axios error shape:
-  {
-    message: 'Request failed',
-    response: {
-      data: {
-        errors: [
-          { message: 'Detailed error message' }
-        ]
-      }
-    }
-  }
-  */
   if (axios.isAxiosError(error)) {
     return (
       error.response?.data?.errors?.[0]?.message ||
@@ -65,16 +51,69 @@ function getErrorMsg(error: unknown): string {
   return 'An unexpected error occurred.';
 }
 
-/**
- * Sends a GET request and returns the response payload.
- *
- * Throws an Error when:
- * - The HTTP request fails.
- * - The API returns a business-level error response.
- */
+//* Sends a GET request and returns the response payload.
 export async function apiGet<T>(url: string, config?: AxiosRequestConfig) {
   try {
     const response = await api.get<ApiEnvelope<T>>(url, config);
+
+    if (response.data.status === 'error') {
+      throw new Error(response.data.errors?.[0]?.message || 'The request could not be processed.');
+    }
+
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getErrorMsg(error), {
+      cause: error,
+    });
+  }
+}
+
+//* Sends a POST request and returns the response payload.
+export async function apiPost<TResponse, TBody = unknown>(
+  url: string,
+  body?: TBody,
+  config?: AxiosRequestConfig
+) {
+  try {
+    const response = await api.post<ApiEnvelope<TResponse>>(url, body, config);
+
+    // Check whether the API responded with an application-level error.
+    if (response.data.status === 'error') {
+      throw new Error(response.data.errors?.[0]?.message || 'The request could not be processed.');
+    }
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getErrorMsg(error), {
+      cause: error,
+    });
+  }
+}
+
+//* Sends a PUT request and returns the response payload.
+export async function apiPut<TResponse, TBody = unknown>(
+  url: string,
+  body?: TBody,
+  config?: AxiosRequestConfig
+) {
+  try {
+    const response = await api.put<ApiEnvelope<TResponse>>(url, body, config);
+
+    if (response.data.status === 'error') {
+      throw new Error(response.data.errors?.[0]?.message || 'The request could not be processed.');
+    }
+
+    return response.data.data;
+  } catch (error) {
+    throw new Error(getErrorMsg(error), {
+      cause: error,
+    });
+  }
+}
+
+//* Sends a DELETE request and returns the response payload.
+export async function apiDelete<TResponse>(url: string, config?: AxiosRequestConfig) {
+  try {
+    const response = await api.delete<ApiEnvelope<TResponse>>(url, config);
 
     if (response.data.status === 'error') {
       throw new Error(response.data.errors?.[0]?.message || 'The request could not be processed.');
