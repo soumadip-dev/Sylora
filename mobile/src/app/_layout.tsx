@@ -12,6 +12,7 @@ import { useColorScheme } from 'react-native';
 import { env } from '../lib/env';
 import { ClerkProvider } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
+import { useBootstrapAuth } from '../features/auth/useBootstrapAuth';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -22,6 +23,42 @@ const publishableKey = env.clerkPublishableKey;
 
 if (!publishableKey) {
   throw new Error('Add your Clerk Publishable Key to the .env file');
+}
+
+function RootLayoutNav() {
+  useBootstrapAuth();
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="product/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="orders"
+        options={{
+          headerShown: false,
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="order-success"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
@@ -49,35 +86,7 @@ export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: 'transparent' },
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="product/[id]"
-            options={{
-              headerShown: false,
-              presentation: 'card',
-            }}
-          />
-          <Stack.Screen
-            name="orders"
-            options={{
-              headerShown: false,
-              presentation: 'card',
-            }}
-          />
-          <Stack.Screen
-            name="order-success"
-            options={{
-              headerShown: false,
-              gestureEnabled: false,
-            }}
-          />
-        </Stack>
+        <RootLayoutNav />
       </ThemeProvider>
     </ClerkProvider>
   );
