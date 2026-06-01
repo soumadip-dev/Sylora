@@ -7,6 +7,7 @@ interface EnvConfig {
   MONGO_URI: string;
   CORS_ORIGINS: string[];
   NODE_ENV: string;
+  ADMIN_EMAILS: string;
 }
 
 const port = Number(process.env.PORT);
@@ -18,4 +19,5 @@ export const env: EnvConfig = {
     ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
     : [],
   NODE_ENV: process.env.NODE_ENV || 'development',
+  ADMIN_EMAILS: process.env.ADMIN_EMAILS || 'soumadipmajila@gmail.com',
 };

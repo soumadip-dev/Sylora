@@ -1,17 +1,20 @@
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { clerkMiddleware } from '@clerk/express';
 
 import { env } from './config/env.config';
 import { configCors } from './config/cors.config';
 import { connectDB } from './db';
 
-import { errorHandler } from './middleware/errorhandler.middleware';
-import { NotFound } from './middleware/notFound.middleware';
+import { errorHandler } from './middleware/errorhandler.middleware.ts';
+import { NotFound } from './middleware/notFound.middleware.ts';
 
-import { successResponse } from './utils/envelope.utils';
-import { logger } from './utils/logger.utils';
+import { successResponse } from './utils/envelope.utils.ts';
+import { logger } from './utils/logger.utils.ts';
+import { authRouter } from './routes/auth.routes.ts';
 
+//* Start the server
 async function bootstrap() {
   await connectDB();
 
@@ -20,6 +23,7 @@ async function bootstrap() {
   app.use(configCors());
   app.use(helmet());
   app.use(morgan('dev'));
+  app.use(clerkMiddleware());
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -31,6 +35,9 @@ async function bootstrap() {
   app.get('/', (_req: Request, res: Response) => {
     return res.status(200).json(successResponse({ message: 'Ecommerce Server is running 🛒' }));
   });
+
+  // auth routes
+  app.use('/auth', authRouter);
 
   app.use(NotFound);
   app.use(errorHandler);
