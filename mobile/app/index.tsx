@@ -1,0 +1,6 @@
+import React from 'react';
+import { Redirect, Href } from 'expo-router';
+
+export default function Index() {
+  return <Redirect href={"/(tabs)" as Href} />;
+}
