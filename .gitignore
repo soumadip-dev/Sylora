@@ -3,6 +3,7 @@ node_modules/
 
 # Build output
 dist/
+dist-ssr/
 out/
 web-build/
 *.tgz
@@ -15,9 +16,11 @@ coverage/
 logs/
 *.log
 report.*.*.*.*.json
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Environment variables
 .env
@@ -26,6 +29,7 @@ yarn-error.*
 .env.test.local
 .env.production.local
 .env*.local
+*.local
 
 # Expo
 .expo/
@@ -53,8 +57,15 @@ expo-env.d.ts
 /ios
 /android
 
-# IDEs
+# IDEs / Editors
 .idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # macOS
 .DS_Store
