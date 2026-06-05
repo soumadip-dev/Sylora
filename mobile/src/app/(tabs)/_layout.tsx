@@ -21,26 +21,26 @@ export default function TabsLayout() {
     >
       <NativeTabs.Trigger name="index">
         <Label>Home</Label>
-        <Icon sf="house.fill" src={require('../../assets/icons/home.svg')} />
+        <Icon sf="house.fill" src={require('@/assets/icons/home.svg')} />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="collections">
-        <Icon sf="square.grid.2x2.fill" src={require('../../assets/icons/grid.svg')} />
+        <Icon sf="square.grid.2x2.fill" src={require('@/assets/icons/grid.svg')} />
         <Label>Collections</Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="cart">
-        <Icon sf="bag.fill" src={require('../../assets/icons/bag.svg')} />
+        <Icon sf="bag.fill" src={require('@/assets/icons/bag.svg')} />
         <Label>Cart</Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="wishlist">
-        <Icon sf="heart.fill" src={require('../../assets/icons/heart.svg')} />
+        <Icon sf="heart.fill" src={require('@/assets/icons/heart.svg')} />
         <Label>Wishlist</Label>
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="profile">
-        <Icon sf="person.fill" src={require('../../assets/icons/person.svg')} />
+        <Icon sf="person.fill" src={require('@/assets/icons/person.svg')} />
         <Label>Account</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
