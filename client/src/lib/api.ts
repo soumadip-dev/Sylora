@@ -32,6 +32,7 @@ api.interceptors.request.use(async config => {
   return config;
 });
 
+//* Handle the error response from the API.
 function getErrorMsg(error: unknown): string {
   /*
   Handle errors thrown by Axios.
@@ -66,7 +67,6 @@ function getErrorMsg(error: unknown): string {
 }
 
 //* Sends a GET request and returns the response payload.
-
 export async function apiGet<T>(url: string, config?: AxiosRequestConfig) {
   try {
     const response = await api.get<ApiEnvelope<T>>(url, config);
