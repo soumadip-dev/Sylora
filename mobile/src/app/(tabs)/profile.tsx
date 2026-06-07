@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Colors } from '../../constants/colors';
 import { useAppStore } from '../../store/useAppStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SignInScreen from '@/src/components/sign-in';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
@@ -92,7 +93,7 @@ export default function ProfileScreen() {
   if (!isLoggedIn) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={[styles.loginContainer, { paddingTop: insets.top }]}>
+        {/* <View style={[styles.loginContainer, { paddingTop: insets.top }]}>
           <View style={[styles.loginIconContainer, { backgroundColor: colors.surface }]}>
             <Feather name="user" size={60} color={colors.accent} />
           </View>
@@ -114,7 +115,8 @@ export default function ProfileScreen() {
             New to our luxury collection?{' '}
             <Text style={[styles.loginFooterLink, { color: colors.accent }]}>Create Account</Text>
           </Text>
-        </View>
+        </View> */}
+        <SignInScreen />
       </View>
     );
   }
